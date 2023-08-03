@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <climits>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -66,9 +68,50 @@ public:
   }
 };
 
+/* Better Binary Search
+ * time: O(log(min(m+n))) ; space: O(1)
+ */
+class Solution {
+public:
+  double findMedianSortedArrays(vector<int> &nums1, vector<int> &nums2) {
+    // Our algorithm assumes that the first array is shorter. So we swap when
+    // it's not
+    if (nums1.size() > nums2.size()) {
+      return findMedianSortedArrays(nums2, nums1);
+    }
+
+    int m = nums1.size(), n = nums2.size();
+    int left = 0, right = m;
+
+    while (left <= right) {
+      int partitionA = (left + right) / 2;
+      int partitionB = (m + n + 1) / 2 - partitionA;
+
+      int maxLeftA = (partitionA == 0) ? INT_MIN : nums1[partitionA - 1];
+      int minRightA = (partitionA == m) ? INT_MAX : nums1[partitionA];
+      int maxLeftB = (partitionB == 0) ? INT_MIN : nums2[partitionB - 1];
+      int minRightB = (partitionB == n) ? INT_MAX : nums2[partitionB];
+
+      if (maxLeftA > minRightB) {
+        right = partitionA - 1;
+      } else if (maxLeftB > minRightA) {
+        left = partitionA + 1;
+      } else {
+        if ((m + n) % 2 == 0) {
+          return (max(maxLeftA, maxLeftB) + min(minRightA, minRightB)) / 2.0;
+        } else {
+          return max(maxLeftA, maxLeftB);
+        }
+      }
+    }
+    return 0.0;
+  }
+};
+
 int main(void) {
   ifstream inputfile("./input.txt");
   LesserSolution lesserSolution;
+  Solution solution;
 
   if (inputfile.is_open()) {
     string line;
@@ -97,11 +140,13 @@ int main(void) {
       }
 
       double result = lesserSolution.findMedianSortedArrays(A, B);
+      double fasterResult = solution.findMedianSortedArrays(A, B);
 
       // start solving
       cout << "first array: " << firArr << endl;
       cout << "second array: " << secArr << endl;
-      cout << "result: " << result << "\n\n";
+      cout << "result: " << result << endl;
+      cout << "faster result: " << result << "\n\n";
     }
   }
 }
