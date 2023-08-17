@@ -1,3 +1,4 @@
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <ostream>
@@ -24,7 +25,24 @@ public:
 
 class Solution_Number {
 public:
-  bool isPalindrome(int x) { return true; }
+  bool isPalindrome(int x) {
+    if (x == 0)
+      return true;
+    else if (x < 0 || x % 10 == 0)
+      return false;
+
+    int reversed_right = 0;
+    int exponent = std::log10(x);
+    while (x > reversed_right) {
+      reversed_right = reversed_right * 10 + x % 10;
+      x /= 10;
+    }
+
+    if (exponent % 2 == 0)
+      return (x == reversed_right / 10);
+    else
+      return (x == reversed_right);
+  }
 };
 
 int main() {
