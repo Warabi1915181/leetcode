@@ -2,5 +2,5 @@
 .DS_Store
 
 # compiled program
-*/main
-*/main.exe
+**/main
+**/main.exe
